@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/bikash138/students-api/internal/config"
+	"github.com/bikash138/students-api/internal/http/handlers/student"
 )
 
 func main() {
@@ -18,15 +19,15 @@ func main() {
 	cfg := config.MustLoad()
 	//Router Setup
 	router := http.NewServeMux()
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to Server of Student"))
-	})
+	router.HandleFunc("POST /api/students", student.New())
 	server := http.Server{
 		Addr: cfg.Addr,
 		Handler: router,
 	}
+
 	slog.Info("Server Started ", slog.String("address", cfg.Addr))
 
+	//Gracefull Shutdown
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	go func () {
